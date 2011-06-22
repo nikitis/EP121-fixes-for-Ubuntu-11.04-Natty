@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 REPO="https://github.com/cskau/EP121-fixes-for-Ubuntu-11.04-Natty/raw/master/"
-BINDIR="$HOME/bin/"
+BINDIR="$HOME/.bin/"
+INIT="/etc/gdm/Init/"
+GDM="/var/lib/gdm/"
+HOMDIR=$HOME
 
 ## Fix Bluetooth applet/service
 # note: on board bluetooth seems to still lacks kernel driver .. or something ..
@@ -57,9 +60,21 @@ else
     echo "WARNING: Could not find login or profile script."
     echo "Adding .profile to home folder. Please make sure this is the right thing to do."
     if [ -z "`grep \"ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
+        # next three lines change the variable in a fresh .profile from $HOME/bin to $HOME/.bin then cleans up.
+        cp ${BINDIR}temp $HOME/.profile |sed '20 c\if [ -d "$HOME/.bin" ] ; then' $HOME/.profile > ${BINDIR}temp
+        cp ${BINDIR}temp $HOME/.profile |sed '21 c\    PATH="$HOME/.bin"$PATH"' $HOME/.profile > ${BINDIR}temp
+        rm ${BINDIR}temp
         echo "ep121_drv.py &" >> $HOME/.profile
     fi
 fi
+
+# make sure driver/onboard runs pre-login.  needed for those without keyboards at all to login.
+touch ${BINDIR}Default
+sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec onboard &' ${INIT}Default > $HOME/.bin/Default
+sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec onboard &/ i\exec python ${GDM}ep121_drv &' ${INIT}Default > ${BINDIR}Default
+rm ${BINDIR}Default
+sudo ln -s ${HOMDIR}/.bin/ep121_drv.py /var/lib/gdm/
+
 
 
 ## Add hot keys
