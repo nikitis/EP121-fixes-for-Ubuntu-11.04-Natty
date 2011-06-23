@@ -20,6 +20,28 @@ if [ "$A" = y ]; then
     echo "bluez hold" | sudo dpkg --set-selections
 fi
 
+## Choose which onscreen keyboard user requests.
+read -p "Which onscreen keyboard would you like.  Florence or Onboard (f/o)?" B
+if [ "$B" = f ]; then
+    # Installs Florence and creates softlink to driver.
+    touch ${BINDIR}Default
+    sudo apt-get install florence
+    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec florence &' ${INIT}Default > $HOME/.bin/Default
+    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec florence &/ i\exec python ${GDM}ep121_drv &' ${INIT}Default > ${BINDIR}Default
+    rm ${BINDIR}Default
+    sudo ln -s ${HOMDIR}/.bin/ep121_drv.py /var/lib/gdm/
+    echo "Florence will not start before you log in."
+else
+    # Creates softlink to driver and loads onboard pre-login.
+    touch ${BINDIR}Default
+    echo "Onboard comes with Ubuntu.  No installation needed.  Writing boot script..."
+    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec onboard &' ${INIT}Default > $HOME/.bin/Default
+    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec onboard &/ i\exec python ${GDM}ep121_drv &' ${INIT}Default > ${BINDIR}Default
+    rm ${BINDIR}Default
+    sudo ln -s ${HOMDIR}/.bin/ep121_drv.py /var/lib/gdm/
+    echo "Onboard will now start before you log in."
+fi
+
 ## Fix touch screen
 
 # overrule evdev driver for the touch screen - replace with ignore rule
@@ -67,15 +89,6 @@ else
         echo "ep121_drv.py &" >> $HOME/.profile
     fi
 fi
-
-# make sure driver/onboard runs pre-login.  needed for those without keyboards at all to login.
-touch ${BINDIR}Default
-sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec onboard &' ${INIT}Default > $HOME/.bin/Default
-sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec onboard &/ i\exec python ${GDM}ep121_drv &' ${INIT}Default > ${BINDIR}Default
-rm ${BINDIR}Default
-sudo ln -s ${HOMDIR}/.bin/ep121_drv.py /var/lib/gdm/
-
-
 
 ## Add hot keys
 
