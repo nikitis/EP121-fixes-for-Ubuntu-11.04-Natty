@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 REPO="https://github.com/cskau/EP121-fixes-for-Ubuntu-11.04-Natty/raw/master/"
-BINDIR="$HOME/.bin/"
+BINDIR="$HOME/.bin/ep121/"
 INIT="/etc/gdm/Init/"
 GDM="/var/lib/gdm/"
 HOMDIR=$HOME
@@ -26,19 +26,19 @@ if [ "$B" = f ]; then
     # Installs Florence and creates softlink to driver.
     touch ${BINDIR}Default
     sudo apt-get install florence
-    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec florence &' ${INIT}Default > $HOME/.bin/Default
+    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec florence &' ${INIT}Default > ${BINDIR}Default
     sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec florence &/ i\exec python ${GDM}ep121_drv &' ${INIT}Default > ${BINDIR}Default
     rm ${BINDIR}Default
-    sudo ln -s ${HOMDIR}/.bin/ep121_drv.py /var/lib/gdm/
+    sudo ln -s ${HOMDIR}/.bin/ep121/ep121_drv.py ${GDM}
     echo "Florence will not start before you log in."
 else
     # Creates softlink to driver and loads onboard pre-login.
     touch ${BINDIR}Default
     echo "Onboard comes with Ubuntu.  No installation needed.  Writing boot script..."
-    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec onboard &' ${INIT}Default > $HOME/.bin/Default
+    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec onboard &' ${INIT}Default > ${BINDIR}Default
     sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec onboard &/ i\exec python ${GDM}ep121_drv &' ${INIT}Default > ${BINDIR}Default
     rm ${BINDIR}Default
-    sudo ln -s ${HOMDIR}/.bin/ep121_drv.py /var/lib/gdm/
+    sudo ln -s ${HOMDIR}/.bin/ep121/ep121_drv.py ${GDM}
     echo "Onboard will now start before you log in."
 fi
 
