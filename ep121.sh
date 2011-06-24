@@ -87,7 +87,7 @@ else
 fi
 
 ## Add hot keys
-
+#
 # We might want to fiddle with this at some point
 # would be nice to get proper keybindings for them
 
