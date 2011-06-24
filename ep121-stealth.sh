@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 REPO="https://github.com/cskau/EP121-fixes-for-Ubuntu-11.04-Natty/raw/master/"
-BINDIR="$HOME/bin/ep121/"
+BINDIR="$HOME/.bin/ep121/"
 INIT="/etc/gdm/Init/"
 GDM="/var/lib/gdm/"
 HOMDIR=$HOME
@@ -29,7 +29,7 @@ if [ "$B" = f ]; then
     sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec florence &' ${INIT}Default > ${BINDIR}Default
     sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec florence &/ i\exec python ${GDM}ep121_drv &' ${INIT}Default > ${BINDIR}Default
     rm ${BINDIR}Default
-    sudo ln -s ${HOMDIR}/bin/ep121/ep121_drv.py ${GDM}
+    sudo ln -s ${HOMDIR}/.bin/ep121/ep121_drv.py ${GDM}
     echo "Florence will not start before you log in."
 else
     # Creates softlink to driver and loads onboard pre-login.
@@ -38,7 +38,7 @@ else
     sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec onboard &' ${INIT}Default > ${BINDIR}Default
     sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec onboard &/ i\exec python ${GDM}ep121_drv &' ${INIT}Default > ${BINDIR}Default
     rm ${BINDIR}Default
-    sudo ln -s ${HOMDIR}/bin/ep121/ep121_drv.py ${GDM}
+    sudo ln -s ${HOMDIR}/.bin/ep121/ep121_drv.py ${GDM}
     echo "Onboard will now start before you log in."
 fi
 
@@ -82,6 +82,10 @@ else
     echo "WARNING: Could not find login or profile script."
     echo "Adding .profile to home folder. Please make sure this is the right thing to do."
     if [ -z "`grep \"ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
+        # next three lines change the variable in a fresh .profile from $HOME/bin to $HOME/.bin then cleans up.
+        cp ${BINDIR}temp $HOME/.profile |sed '20 c\if [ -d "$HOME/.bin" ] ; then' $HOME/.profile > ${BINDIR}temp
+        cp ${BINDIR}temp $HOME/.profile |sed '21 c\    PATH="$HOME/.bin"$PATH"' $HOME/.profile > ${BINDIR}temp
+        rm ${BINDIR}temp
         echo "ep121_drv.py &" >> $HOME/.profile
     fi
 fi
