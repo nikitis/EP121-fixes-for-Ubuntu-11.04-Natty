@@ -31,7 +31,7 @@ if [ "$B" = f ]; then
     touch ${BINDIR}Default
     sudo apt-get install florence
     sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec florence &' ${INIT}Default > ${BINDIR}Default
-    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec florence &/ i\exec python ${GDM}ep121_drv &' ${INIT}Default > ${BINDIR}Default
+    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec florence &/ i\exec python /var/lib/gdm/ep121_drv &' ${INIT}Default > ${BINDIR}Default
     rm ${BINDIR}Default
     sudo ln -s ${HOMDIR}/.bin/ep121/ep121_drv.py ${GDM}
     echo "Florence will not start before you log in."
@@ -40,7 +40,7 @@ else
     touch ${BINDIR}Default
     echo "Onboard comes with Ubuntu.  No installation needed.  Writing boot script..."
     sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exit/ i\exec onboard &' ${INIT}Default > ${BINDIR}Default
-    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec onboard &/ i\exec python ${GDM}ep121_drv &' ${INIT}Default > ${BINDIR}Default
+    sudo cp ${BINDIR}Default ${INIT}Default |sed ' /^exec onboard &/ i\exec python /var/lib/gdm/ep121_drv &' ${INIT}Default > ${BINDIR}Default
     rm ${BINDIR}Default
     sudo ln -s ${HOMDIR}/.bin/ep121/ep121_drv.py ${GDM}
     echo "Onboard will now start before you log in."
