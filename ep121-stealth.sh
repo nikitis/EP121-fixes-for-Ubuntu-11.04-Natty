@@ -58,10 +58,11 @@ wget --no-check-certificate ${REPO}_xautpy.so
 sudo cp -i ./_xautpy.so ${BINDIR}
 wget --no-check-certificate ${REPO}xaut.py
 sudo cp -i ./xaut.py ${BINDIR}
-sudo chown -R 1000.1000 ${BINDIR}
+sudo chown -R 1000.1000 $HOME/.bin
 
 # makes driver executable
 chmod +x ${BINDIR}/ep121_drv.py
+
 # grant the driver read access to input devices
 # TODO: this should be narrowed down to only the two files we actually use
 if [ -z "`grep \"SUBSYSTEM==\\\"input\\\", MODE=\\\"644\\\"\" \"/etc/udev/rules.d/85-ep121.rules\"`" ]; then
