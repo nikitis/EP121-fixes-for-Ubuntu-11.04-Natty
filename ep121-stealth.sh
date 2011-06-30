@@ -6,6 +6,10 @@ INIT="/etc/gdm/Init/"
 GDM="/var/lib/gdm/"
 HOMDIR=$HOME
 
+
+## Creates the BINDIR on the filesystem
+mkdir -p ${BINDIR}
+
 ## Fix Bluetooth applet/service
 # note: on board bluetooth seems to still lacks kernel driver .. or something ..
 read -p "Replace bluez 4.91 with 4.60 (y/n)? " A
@@ -54,6 +58,8 @@ wget --no-check-certificate ${REPO}_xautpy.so
 sudo cp -i ./_xautpy.so ${BINDIR}
 wget --no-check-certificate ${REPO}xaut.py
 sudo cp -i ./xaut.py ${BINDIR}
+sudo chown -R 1000.1000 ${BINDIR}
+
 # makes driver executable
 chmod +x ${BINDIR}/ep121_drv.py
 # grant the driver read access to input devices
@@ -66,28 +72,22 @@ fi
 if [ -e "$HOME/.bash_login" ]; then
     if [ -z "`grep \"ep121_drv.py &\" \"$HOME/.bash_login\"`" ]; then
         echo "Adding ep121_drv.py to $HOME/.bash_login"
-        echo "ep121_drv.py &" >> $HOME/.bash_login
+        echo "ep121/ep121_drv.py &" >> $HOME/.bash_login
     fi
 elif [ -e "$HOME/.bash_profile" ]; then
     if [ -z "`grep \"ep121_drv.py &\" \"$HOME/.bash_profile\"`" ]; then
         echo "Adding ep121_drv.py to $HOME/.bash_profile"
-        echo "ep121_drv.py &" >> $HOME/.bash_profile
+        echo "ep121/ep121_drv.py &" >> $HOME/.bash_profile
     fi
 elif [ -e "$HOME/.profile" ]; then
-    if [ -z "`grep \"ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
-        echo "Adding ep121_drv.py to $HOME/.profile"
-        echo "ep121_drv.py &" >> $HOME/.profile
+    if [ -z "`grep \"ep121/ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
+        echo "Adding ep121/ep121_drv.py & to $HOME/.profile"
+find $HOME -name ".profile" -exec sed -i 's/if \[ -d "\$HOME\/bin" \] \; then/if \[ -d "\$HOME\/.bin" \] \; then/g {} \;
+        find $HOME -name ".profile" -exec sed -i 's/    PATH\="\$HOME\/bin\:\$PATH"/    PATH\="\$HOME\/.bin\:\$PATH"/g {} \;
+        echo "ep121/ep121_drv.py &" >> $HOME/.profile
     fi
 else
     echo "WARNING: Could not find login or profile script."
-    echo "Adding .profile to home folder. Please make sure this is the right thing to do."
-    if [ -z "`grep \"ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
-        # next three lines change the variable in a fresh .profile from $HOME/bin to $HOME/.bin then cleans up.
-        cp ${BINDIR}temp $HOME/.profile |sed '20 c\if [ -d "$HOME/.bin" ] ; then' $HOME/.profile > ${BINDIR}temp
-        cp ${BINDIR}temp $HOME/.profile |sed '21 c\    PATH="$HOME/.bin"$PATH"' $HOME/.profile > ${BINDIR}temp
-        rm ${BINDIR}temp
-        echo "ep121_drv.py &" >> $HOME/.profile
-    fi
 fi
 
 ## Add hot keys
