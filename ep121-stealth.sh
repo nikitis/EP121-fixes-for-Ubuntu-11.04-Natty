@@ -82,7 +82,7 @@ elif [ -e "$HOME/.bash_profile" ]; then
 elif [ -e "$HOME/.profile" ]; then
     if [ -z "`grep \"ep121/ep121_drv.py &\" \"$HOME/.profile\"`" ]; then
         echo "Adding ep121/ep121_drv.py & to $HOME/.profile"
-find $HOME -name ".profile" -exec sed -i 's/if \[ -d "\$HOME\/bin" \] \; then/if \[ -d "\$HOME\/.bin" \] \; then/g {} \;
+        find $HOME -name ".profile" -exec sed -i 's/if \[ -d "\$HOME\/bin" \] \; then/if \[ -d "\$HOME\/.bin" \] \; then/g {} \;
         find $HOME -name ".profile" -exec sed -i 's/    PATH\="\$HOME\/bin\:\$PATH"/    PATH\="\$HOME\/.bin\:\$PATH"/g {} \;
         echo "ep121/ep121_drv.py &" >> $HOME/.profile
     fi
